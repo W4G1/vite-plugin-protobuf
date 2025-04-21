@@ -67,7 +67,7 @@ Update your `tsconfig.app.json` (or equivalent) with the following path alias:
   "compilerOptions": {
     "paths": {
       "@proto-gen/*": [
-        "node_modules/.vite/proto-gen/*"
+        "./node_modules/.vite/proto-gen/*"
       ]
     }
   }
@@ -78,7 +78,7 @@ This ensures TypeScript can resolve the generated files.
 
 ---
 
-## 🚀 Usage with gRPC Web
+## Usage with gRPC Web
 
 Once your `.proto` files are compiled, you can import the generated clients like so:
 
