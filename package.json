@@ -31,8 +31,6 @@
     "dev": "tsup --watch"
   },
   "dependencies": {
-    "@protobuf-ts/runtime": "^2.9.6",
-    "@protobuf-ts/runtime-rpc": "^2.9.6",
     "chokidar": "^4.0.3"
   },
   "devDependencies": {
@@ -44,7 +42,9 @@
     "typescript": "*",
     "vite": ">=6.1.5",
     "@protobuf-ts/plugin": "^2.9.6",
-    "@protobuf-ts/protoc": "^2.9.6"
+    "@protobuf-ts/protoc": "^2.9.6",
+    "@protobuf-ts/runtime": "^2.9.6",
+    "@protobuf-ts/runtime-rpc": "^2.9.6"
   },
   "peerDependenciesMeta": {
     "typescript": {
