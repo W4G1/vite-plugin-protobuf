@@ -31,29 +31,22 @@
     "dev": "tsup --watch"
   },
   "dependencies": {
-    "@protobuf-ts/plugin": "^2.9.6",
-    "@protobuf-ts/protoc": "^2.9.6",
     "@protobuf-ts/runtime": "^2.9.6",
     "@protobuf-ts/runtime-rpc": "^2.9.6",
     "chokidar": "^4.0.3"
   },
   "devDependencies": {
-    "@types/eslint": "^7.29.0",
     "@types/node": "^22.14.1",
     "tsup": "^8.3.6",
     "typescript": "^5.7.3"
   },
   "peerDependencies": {
-    "eslint": ">=7",
     "typescript": "*",
     "vite": ">=6.1.5",
     "@protobuf-ts/plugin": "^2.9.6",
     "@protobuf-ts/protoc": "^2.9.6"
   },
   "peerDependenciesMeta": {
-    "eslint": {
-      "optional": true
-    },
     "typescript": {
       "optional": true
     }
