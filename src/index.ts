@@ -8,7 +8,21 @@ import chokidar, { type FSWatcher } from 'chokidar';
 const execAsync = promisify(exec);
 const DEBOUNCE_COOLDOWN_MS = 100;
 
-export default function createProtocTempPlugin(): Plugin {
+/**
+ * Options for vite-plugin-protobuf.
+ */
+export interface ProtobufPluginOptions {
+  /**
+   * The path to the directory containing your `.proto` files.
+   * This path is passed to the `--proto_path` flag for `protoc`.
+   * It can be absolute or relative to the Vite project root.
+   *
+   * @default '../proto'
+   */
+  protoPath?: string;
+}
+
+export default function createProtocTempPlugin(options: ProtobufPluginOptions = {}): Plugin {
   let cacheDir: string;
   let outputDir: string;
   let protoDir: string;
@@ -40,7 +54,13 @@ export default function createProtocTempPlugin(): Plugin {
         ? config.cacheDir
         : path.resolve(config.root, config.cacheDir);
       outputDir = path.resolve(cacheDir, 'proto-gen');
-      protoDir = path.resolve(config.root, '../proto');
+
+      // Resolve proto path relative to project root if not absolute
+      protoDir = options.protoPath
+        ? path.isAbsolute(options.protoPath)
+          ? options.protoPath
+          : path.resolve(config.root, options.protoPath)
+        : path.resolve(config.root, '../proto');
     },
 
     async buildStart() {
