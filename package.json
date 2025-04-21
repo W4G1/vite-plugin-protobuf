@@ -46,7 +46,9 @@
   "peerDependencies": {
     "eslint": ">=7",
     "typescript": "*",
-    "vite": ">=6.1.5"
+    "vite": ">=6.1.5",
+    "@protobuf-ts/plugin": "^2.9.6",
+    "@protobuf-ts/protoc": "^2.9.6"
   },
   "peerDependenciesMeta": {
     "eslint": {
