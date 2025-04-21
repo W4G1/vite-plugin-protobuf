@@ -24,7 +24,7 @@ export default function createProtocTempPlugin(): Plugin {
     try {
       // adjust your --ts_out flags if needed
       await execAsync(
-        `protoc --ts_out=${outputDir} --proto_path=${protoDir} ${path.join(protoDir, '*.proto')}`
+        `npx protoc --ts_out=${outputDir} --proto_path=${protoDir} ${path.join(protoDir, '*.proto')}`
       );
     } catch (err: any) {
       console.error('[vite-plugin-protobuf] protoc error:', err.stderr || err);
