@@ -16,13 +16,15 @@ export interface ProtobufPluginOptions {
    * The path to the directory containing your `.proto` files.
    * This path is passed to the `--proto_path` flag for `protoc`.
    * It can be absolute or relative to the Vite project root.
-   *
-   * @default '../proto'
    */
-  protoPath?: string;
+  protoPath: string;
 }
 
-export default function createProtocTempPlugin(options: ProtobufPluginOptions = {}): Plugin {
+export default function protobuf(inlineOptions: ProtobufPluginOptions): Plugin {
+  if (!inlineOptions || !inlineOptions.protoPath) {
+    throw new Error('[vite-plugin-protobuf] Missing required option: "protoPath".');
+  }
+
   let cacheDir: string;
   let outputDir: string;
   let protoDir: string;
@@ -56,11 +58,9 @@ export default function createProtocTempPlugin(options: ProtobufPluginOptions = 
       outputDir = path.resolve(cacheDir, 'proto-gen');
 
       // Resolve proto path relative to project root if not absolute
-      protoDir = options.protoPath
-        ? path.isAbsolute(options.protoPath)
-          ? options.protoPath
-          : path.resolve(config.root, options.protoPath)
-        : path.resolve(config.root, '../proto');
+      protoDir = path.isAbsolute(inlineOptions.protoPath)
+        ? inlineOptions.protoPath
+        : path.resolve(config.root, inlineOptions.protoPath);
     },
 
     async buildStart() {
