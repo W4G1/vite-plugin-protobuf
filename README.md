@@ -40,8 +40,6 @@ Then run:
 npm install
 ```
 
----
-
 ## Configuration
 
 Add the plugin to your `vite.config.ts` or `vite.config.js`:
@@ -57,8 +55,9 @@ export default {
   ]
 };
 ```
+---
 
-### Required TypeScript Configuration
+### Usage with Vite + SPA (React, Vue, Svelte etc.)
 
 Update your `tsconfig.app.json` (or equivalent) with the following path alias:
 
@@ -78,15 +77,33 @@ This ensures TypeScript can resolve the generated files.
 
 ---
 
-## Usage with gRPC Web
+### Usage with SvelteKit
+
+Modify the `vite.config.ts` like so:
+
+```ts
+import protobuf from 'vite-plugin-protobuf';
+
+export default {
+  plugins: [
+    protobuf({
+      protoPath: "../proto",
+      outputDir: "./src/lib/proto",
+    })
+  ]
+};
+```
 
 Once your `.proto` files are compiled, you can import the generated clients like so:
 
 ```ts
 // Compiled from helloworld.proto
-import { GreeterClient } from "@proto-gen/helloworld.client";
+import { GreeterClient } from "$lib/proto/helloworld.client";
 ```
 
+---
+
+## Next steps with gRPC Web
 
 To use the generated clients with gRPC over HTTP in the browser, install:
 
