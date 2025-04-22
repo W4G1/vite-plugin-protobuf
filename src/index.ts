@@ -1,9 +1,9 @@
-import type { Plugin } from 'vite';
-import path from 'path';
-import fs from 'fs';
-import { promisify } from 'util';
-import { exec } from 'child_process';
-import chokidar, { type FSWatcher } from 'chokidar';
+import type { Plugin } from "vite";
+import path from "path";
+import fs from "fs";
+import { promisify } from "util";
+import { exec } from "child_process";
+import chokidar, { type FSWatcher } from "chokidar";
 
 const execAsync = promisify(exec);
 const DEBOUNCE_COOLDOWN_MS = 100;
@@ -14,15 +14,21 @@ const DEBOUNCE_COOLDOWN_MS = 100;
 export interface ProtobufPluginOptions {
   /**
    * The path to the directory containing your `.proto` files.
-   * This path is passed to the `--proto_path` flag for `protoc`.
-   * It can be absolute or relative to the Vite project root.
    */
   protoPath: string;
+
+  /**
+   * Optional output directory for generated TypeScript files.
+   * @default "node_modules/.vite/proto-gen"
+   */
+  outputDir?: string;
 }
 
 export default function protobuf(inlineOptions: ProtobufPluginOptions): Plugin {
   if (!inlineOptions || !inlineOptions.protoPath) {
-    throw new Error('[vite-plugin-protobuf] Missing required option: "protoPath".');
+    throw new Error(
+      '[vite-plugin-protobuf] Missing required option: "protoPath".',
+    );
   }
 
   let cacheDir: string;
@@ -40,24 +46,31 @@ export default function protobuf(inlineOptions: ProtobufPluginOptions): Plugin {
     try {
       // adjust your --ts_out flags if needed
       await execAsync(
-        `npx protoc --ts_out=${outputDir} --proto_path=${protoDir} ${path.join(protoDir, '*.proto')}`
+        `npx protoc --ts_out=${outputDir} --proto_path=${protoDir} ${
+          path.join(protoDir, "*.proto")
+        }`,
       );
     } catch (err: any) {
-      console.error('[vite-plugin-protobuf] protoc error:', err.stderr || err);
+      console.error("[vite-plugin-protobuf] protoc error:", err.stderr || err);
       throw err;
     }
   }
 
   return {
-    name: 'vite-plugin-protobuf',
+    name: "vite-plugin-protobuf",
 
     configResolved(config) {
       cacheDir = path.isAbsolute(config.cacheDir)
         ? config.cacheDir
         : path.resolve(config.root, config.cacheDir);
-      outputDir = path.resolve(cacheDir, 'proto-gen');
 
-      // Resolve proto path relative to project root if not absolute
+      // Set outputDir based on user config or fallback
+      outputDir = inlineOptions.outputDir
+        ? path.isAbsolute(inlineOptions.outputDir)
+          ? inlineOptions.outputDir
+          : path.resolve(config.root, inlineOptions.outputDir)
+        : path.resolve(cacheDir, "proto-gen");
+
       protoDir = path.isAbsolute(inlineOptions.protoPath)
         ? inlineOptions.protoPath
         : path.resolve(config.root, inlineOptions.protoPath);
@@ -68,12 +81,12 @@ export default function protobuf(inlineOptions: ProtobufPluginOptions): Plugin {
     },
 
     resolveId(id) {
-      if (id === '@proto-gen') {
+      if (id === "@proto-gen") {
         return outputDir;
       }
-      if (id.startsWith('@proto-gen/')) {
-        const rel = id.slice('@proto-gen/'.length);
-        for (const ext of ['.ts', '.js']) {
+      if (id.startsWith("@proto-gen/")) {
+        const rel = id.slice("@proto-gen/".length);
+        for (const ext of [".ts", ".js"]) {
           const full = path.join(outputDir, rel + ext);
           if (fs.existsSync(full)) {
             return full;
@@ -92,7 +105,7 @@ export default function protobuf(inlineOptions: ProtobufPluginOptions): Plugin {
         lastRun = now;
         try {
           await runProtoc();
-          server.ws.send({ type: 'full-reload', path: '*' });
+          server.ws.send({ type: "full-reload", path: "*" });
         } catch {
           // swallow errors
         } finally {
@@ -102,20 +115,20 @@ export default function protobuf(inlineOptions: ProtobufPluginOptions): Plugin {
 
       try {
         watcherInstance = chokidar.watch(protoDir, {
-          ignored: ['**/.git/**', '**/node_modules/**'],
+          ignored: ["**/.git/**", "**/node_modules/**"],
           ignoreInitial: true,
         });
 
-        watcherInstance.on('add', handle);
-        watcherInstance.on('change', handle);
-        watcherInstance.on('unlink', handle);
+        watcherInstance.on("add", handle);
+        watcherInstance.on("change", handle);
+        watcherInstance.on("unlink", handle);
 
-        server.httpServer?.once('close', () => {
+        server.httpServer?.once("close", () => {
           watcherInstance?.close();
         });
       } catch (err) {
-        console.error('[vite-plugin-protobuf] chokidar setup failed:', err);
+        console.error("[vite-plugin-protobuf] chokidar setup failed:", err);
       }
-    }
+    },
   };
 }
