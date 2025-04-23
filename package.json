@@ -1,6 +1,6 @@
 {
   "name": "vite-plugin-protobuf",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "description": "Vite plugin that automatically compiles .proto files to TypeScript clients",
   "keywords": [
     "vite",
@@ -40,7 +40,7 @@
   },
   "peerDependencies": {
     "typescript": "*",
-    "vite": ">=6.1.5",
+    "vite": "^5.3.5",
     "@protobuf-ts/plugin": "^2.9.6",
     "@protobuf-ts/protoc": "^2.9.6",
     "@protobuf-ts/runtime": "^2.9.6",
