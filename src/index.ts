@@ -78,7 +78,7 @@ export default function protobuf(inlineOptions: ProtobufPluginOptions): Plugin {
   return {
     name: "vite-plugin-protobuf",
 
-    configResolved(config) {
+    async configResolved(config) {
       cacheDir = path.isAbsolute(config.cacheDir)
         ? config.cacheDir
         : path.resolve(config.root, config.cacheDir);
@@ -93,11 +93,13 @@ export default function protobuf(inlineOptions: ProtobufPluginOptions): Plugin {
       protoDir = path.isAbsolute(inlineOptions.protoPath)
         ? inlineOptions.protoPath
         : path.resolve(config.root, inlineOptions.protoPath);
-    },
 
-    async buildStart() {
       await runProtoc();
     },
+
+    // async buildStart() {
+    //   await runProtoc();
+    // },
 
     resolveId(id) {
       if (id === "@proto-gen") {
