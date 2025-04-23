@@ -32,9 +32,10 @@ export default function protobuf(inlineOptions: ProtobufPluginOptions): Plugin {
   let busy = false;
   let watcherInstance: FSWatcher | null = null;
 
-  // Resolve the directory of this plugin inside node_modules
-  const pluginDir = path.dirname(fileURLToPath(import.meta.url));
-  outputDir = path.resolve(pluginDir, "proto");
+  // Resolve the root of the plugin (i.e., one level above dist)
+  const currentFile = fileURLToPath(import.meta.url);
+  const pluginRoot = path.resolve(path.dirname(currentFile), "..");
+  outputDir = path.resolve(pluginRoot, "@");
 
   async function runProtoc() {
     // clean & recreate output
