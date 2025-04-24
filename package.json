@@ -1,6 +1,6 @@
 {
   "name": "vite-plugin-protobuf",
-  "version": "0.0.26",
+  "version": "0.0.27",
   "description": "Vite plugin that automatically compiles .proto files to TypeScript clients",
   "keywords": [
     "vite",
@@ -23,14 +23,14 @@
   "types": "./dist/index.d.ts",
   "files": [
     "dist",
-    "postinstall.js"
+    "scripts"
   ],
   "scripts": {
     "build": "tsup",
     "build:test": "tsup --sourcemap inline",
     "clean": "rimraf dist",
     "dev": "tsup --watch",
-    "postinstall": "node postinstall.js"
+    "postinstall": "npx ts-node ./scripts/postinstall.ts"
   },
   "dependencies": {
     "chokidar": "^4.0.3"
