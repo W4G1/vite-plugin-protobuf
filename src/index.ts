@@ -4,7 +4,6 @@ import fs from "fs";
 import { promisify } from "util";
 import { exec } from "child_process";
 import chokidar, { type FSWatcher } from "chokidar";
-import { fileURLToPath } from "url";
 
 const execAsync = promisify(exec);
 const DEBOUNCE_COOLDOWN_MS = 100;
@@ -26,16 +25,12 @@ export default function protobuf(inlineOptions: ProtobufPluginOptions): Plugin {
     );
   }
 
-  let outputDir: string;
+  const outputDir = path.resolve("node_modules/.vite-plugin-protobuf");
+
   let protoDir: string;
   let lastRun = 0;
   let busy = false;
   let watcherInstance: FSWatcher | null = null;
-
-  // Resolve the root of the plugin (i.e., one level above dist)
-  const currentFile = fileURLToPath(import.meta.url);
-  const pluginRoot = path.resolve(path.dirname(currentFile), "..");
-  outputDir = path.resolve(pluginRoot, "@");
 
   async function runProtoc() {
     // clean & recreate output
@@ -43,7 +38,6 @@ export default function protobuf(inlineOptions: ProtobufPluginOptions): Plugin {
     await fs.promises.mkdir(outputDir, { recursive: true });
 
     try {
-      // adjust your --ts_out flags if needed
       await execAsync(
         `npx protoc --ts_out=${outputDir} --proto_path=${protoDir} ${
           path.join(protoDir, "*.proto")
@@ -57,6 +51,7 @@ export default function protobuf(inlineOptions: ProtobufPluginOptions): Plugin {
 
   return {
     name: "vite-plugin-protobuf",
+    __options: inlineOptions,
 
     configResolved(config) {
       protoDir = path.isAbsolute(inlineOptions.protoPath)
@@ -66,6 +61,23 @@ export default function protobuf(inlineOptions: ProtobufPluginOptions): Plugin {
 
     async buildStart() {
       await runProtoc();
+    },
+
+    resolveId(id) {
+      if (id === "@proto-gen") {
+        return outputDir;
+      }
+      if (id.startsWith("@proto-gen/")) {
+        const rel = id.slice("@proto-gen/".length);
+        for (const ext of [".ts", ".js"]) {
+          const full = path.join(outputDir, rel + ext);
+          if (fs.existsSync(full)) {
+            return full;
+          }
+        }
+        return path.join(outputDir, rel);
+      }
+      return null;
     },
 
     async configureServer(server) {
