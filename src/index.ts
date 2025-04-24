@@ -51,6 +51,7 @@ export default function protobuf(inlineOptions: ProtobufPluginOptions): Plugin {
 
   return {
     name: "vite-plugin-protobuf",
+    // @ts-expect-error exists
     __options: inlineOptions,
 
     configResolved(config) {
