@@ -1,11 +1,16 @@
 // scripts/postinstall.js
-const { register } = require("ts-node");
-const path = require("path");
+import { register } from 'ts-node';
+import path from 'path';
+import { fileURLToPath, pathToFileURL } from 'url';
 
-// Register ts-node for the current process
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// Register ts-node with transpile-only mode
 register({
   transpileOnly: true,
-  project: path.resolve(__dirname, "../tsconfig.json"),
+  project: path.resolve(__dirname, '../tsconfig.json'),
 });
 
-require("./postinstall-entry.ts");
+// Dynamically import your TypeScript entry file
+const entryPath = path.resolve(__dirname, './postinstall-entry.ts');
+await import(pathToFileURL(entryPath).href);
