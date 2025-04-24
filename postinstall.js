@@ -1,17 +1,19 @@
 #!/usr/bin/env node
-import { fileURLToPath } from "url";
-import { dirname, join } from "path";
+import { fileURLToPath, pathToFileURL } from 'url';
+import { dirname, join } from 'path';
 
-// __dirname equivalent in ESM
+// ESM __dirname
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const __dirname  = dirname(__filename);
 
-// build an absolute file:// URL to your dist script
-const moduleUrl =
-  new URL(join(__dirname, "dist", "generate-proto.js"), import.meta.url).href;
+// build the absolute path to your dist script
+const scriptPath = join(__dirname, 'dist', 'generate-proto.js');
+// convert it to a file:// URL
+const scriptUrl  = pathToFileURL(scriptPath).href;
 
-import(moduleUrl)
-  .catch((err) => {
-    console.error("❌ postinstall failed:", err);
+// dynamically import the ESM script
+import(scriptUrl)
+  .catch(err => {
+    console.error('❌ postinstall failed:', err);
     process.exit(1);
   });
