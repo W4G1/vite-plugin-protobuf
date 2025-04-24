@@ -1,16 +1,22 @@
-// scripts/postinstall.js
+// scripts/postinstall.js (ESM)
 import { register } from 'ts-node';
 import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-// Register ts-node with transpile-only mode
 register({
   transpileOnly: true,
-  project: path.resolve(__dirname, '../tsconfig.json'),
+  // you can ignore node_modules by default
+  ignore: ['**/node_modules/**'],
+  compilerOptions: {
+    module: 'ESNext',
+    moduleResolution: 'NodeNext',
+    target: 'ES2020',
+    esModuleInterop: true,
+    skipLibCheck: true
+  }
 });
 
-// Dynamically import your TypeScript entry file
-const entryPath = path.resolve(__dirname, './postinstall-entry.ts');
-await import(pathToFileURL(entryPath).href);
+const entryURL = pathToFileURL(path.resolve(__dirname, './postinstall-entry.ts')).href;
+await import(entryURL);
