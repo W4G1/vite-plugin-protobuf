@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import path from "path";
 import { runProtoc } from "./protoc";
 import viteConfig from "../vite.config";
